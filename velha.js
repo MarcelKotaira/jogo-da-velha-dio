@@ -1,146 +1,182 @@
-function JogoDaVelhaelha() {
-	var botoes = [];
+function Game() {
+	const JOGADOR_X = "X";
+	const JOGADOR_O = "O";
 
-	for (let i = 1; i < 10; i++) {
-		let obj = document.getElementById(i);
-		botoes.push(obj);
-		botoes[i - 1].addEventListener("click", () => {
-			escolherQuadrado(obj.id);
+	let quadrados = [];
+	let jogadorAtual = null;
+	let vencedor = null;
+	var game = document.getElementById("Game");
+
+	function setPlayer(player) {
+		jogadorAtual.jogadorAtual = player;
+		jogadorAtual.innerHTML = "Jogador: <strong>" + player + "</strong>";
+	}
+
+	function changePlayer() {
+		if (jogadorAtual.jogadorAtual === JOGADOR_X) {
+			setPlayer(JOGADOR_O);
+		} else {
+			setPlayer(JOGADOR_X);
+		}
+	}
+
+	function setResultado(resultado) {
+		vencedor.innerHTML = resultado;
+		jogadorAtual.innerHTML = "";
+	}
+
+	function escolherQuadrado(id) {
+		if (vencedor.innerHTML !== "") return;
+		if (quadrados[id - 1].innerHTML !== " ") return;
+
+		quadrados[id - 1].innerHTML = jogadorAtual.jogadorAtual;
+		quadrados[id - 1].style.color = "#000";
+
+		changePlayer();
+		checaVencedor();
+	}
+
+	function criarTabuleiro() {
+		let line = document.createElement("div");
+		for (let i = 1, linha = 0; i < 10; i++) {
+			let obj = document.createElement("div");
+			obj.id = i;
+			obj.className = "quadrado";
+			obj.innerHTML = " ";
+			obj.addEventListener("click", () => {
+				escolherQuadrado(obj.id);
+			});
+			quadrados.push(obj);
+			linha++;
+			line.appendChild(obj);
+			if (linha == 3) {
+				game.appendChild(line);
+				linha = 0;
+				line = document.createElement("div");
+			}
+		}
+	}
+
+	function criarJogadorAtual() {
+		jogadorAtual = document.createElement("div");
+		jogadorAtual.className = "jogador";
+		setPlayer(JOGADOR_X);
+		game.appendChild(jogadorAtual);
+	}
+
+	function criarVencedor() {
+		vencedor = document.createElement("div");
+		vencedor.className = "vencedor";
+		game.appendChild(vencedor);
+	}
+
+	function criarBtnRestart() {
+		let divRestart = document.createElement("div");
+		let btnRestart = document.createElement("button");
+		btnRestart.addEventListener("click", restart);
+		btnRestart.innerText = "Reiniciar";
+		divRestart.appendChild(btnRestart);
+		game.appendChild(divRestart);
+	}
+
+	function InitialConfigs() {
+		criarTabuleiro();
+		criarJogadorAtual();
+		criarVencedor();
+		criarBtnRestart();
+	}
+
+	function restart() {
+		setResultado("");
+		vencedor.removeAttribute("style");
+
+		quadrados.forEach((el) => {
+			el.removeAttribute("style");
+			el.innerHTML = " ";
 		});
+
+		setPlayer(JOGADOR_X);
 	}
+
+	function checaVencedor() {
+		if (checaSequencia(quadrados[0], quadrados[1], quadrados[2])) {
+			mudaCorQuadrado(quadrados[0], quadrados[1], quadrados[2]);
+			setVencedor(quadrados[0]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[3], quadrados[4], quadrados[5])) {
+			mudaCorQuadrado(quadrados[3], quadrados[4], quadrados[5]);
+			setVencedor(quadrados[3]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[6], quadrados[7], quadrados[8])) {
+			mudaCorQuadrado(quadrados[6], quadrados[7], quadrados[8]);
+			setVencedor(quadrados[6]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[0], quadrados[3], quadrados[6])) {
+			mudaCorQuadrado(quadrados[0], quadrados[3], quadrados[6]);
+			setVencedor(quadrados[0]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[1], quadrados[4], quadrados[7])) {
+			mudaCorQuadrado(quadrados[1], quadrados[4], quadrados[7]);
+			setVencedor(quadrados[1]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[2], quadrados[5], quadrados[8])) {
+			mudaCorQuadrado(quadrados[2], quadrados[5], quadrados[8]);
+			setVencedor(quadrados[2]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[0], quadrados[4], quadrados[8])) {
+			mudaCorQuadrado(quadrados[0], quadrados[4], quadrados[8]);
+			setVencedor(quadrados[0]);
+			return;
+		}
+
+		if (checaSequencia(quadrados[2], quadrados[4], quadrados[6])) {
+			mudaCorQuadrado(quadrados[2], quadrados[4], quadrados[6]);
+			setVencedor(quadrados[2]);
+			return;
+		}
+
+		if (quadrados.filter((el) => el.innerHTML !== " ").length > 8) {
+			setEmpate();
+		}
+	}
+
+	function setEmpate() {
+		setResultado("EMPATE!!!");
+		vencedor.style.color = "#FF0";
+	}
+
+	function setVencedor(quadrado) {
+		setResultado("Vencedor: " + quadrado.innerHTML);
+		vencedor.style.color = "#0F0";
+	}
+
+	function mudaCorQuadrado(quadrado1, quadrado2, quadrado3) {
+		quadrado1.style.background = "#0f0";
+		quadrado2.style.background = "#0f0";
+		quadrado3.style.background = "#0f0";
+	}
+
+	function checaSequencia(quadrado1, quadrado2, quadrado3) {
+		return quadrado1.innerHTML !== " " &&
+			quadrado1.innerHTML === quadrado2.innerHTML &&
+			quadrado2.innerHTML === quadrado3.innerHTML
+			? true
+			: false;
+	}
+
+	InitialConfigs();
 }
 
-JogoDaVelhaelha();
-
-var jogador = null;
-var vencedor = null;
-var jogadorSelecionado = document.getElementById("jogador-selecionado");
-var vencedorSelecionado = document.getElementById("vencedor-selecionado");
-
-mudarJogador("X");
-
-function escolherQuadrado(id) {
-	if (vencedor !== null) {
-		return;
-	}
-
-	var quadrado = document.getElementById(id);
-	if (quadrado.innerHTML !== "-") {
-		return;
-	}
-
-	quadrado.innerHTML = jogador;
-	quadrado.style.color = "#000";
-
-	if (jogador === "X") {
-		jogador = "O";
-	} else {
-		jogador = "X";
-	}
-
-	mudarJogador(jogador);
-	checaVencedor();
-}
-
-function mudarJogador(valor) {
-	jogador = valor;
-	jogadorSelecionado.innerHTML = jogador;
-}
-
-function checaVencedor() {
-	var quadrado1 = document.getElementById(1);
-	var quadrado2 = document.getElementById(2);
-	var quadrado3 = document.getElementById(3);
-	var quadrado4 = document.getElementById(4);
-	var quadrado5 = document.getElementById(5);
-	var quadrado6 = document.getElementById(6);
-	var quadrado7 = document.getElementById(7);
-	var quadrado8 = document.getElementById(8);
-	var quadrado9 = document.getElementById(9);
-
-	if (checaSequencia(quadrado1, quadrado2, quadrado3)) {
-		mudaCorQuadrado(quadrado1, quadrado2, quadrado3);
-		mudarVencedor(quadrado1);
-		return;
-	}
-
-	if (checaSequencia(quadrado4, quadrado5, quadrado6)) {
-		mudaCorQuadrado(quadrado4, quadrado5, quadrado6);
-		mudarVencedor(quadrado4);
-		return;
-	}
-
-	if (checaSequencia(quadrado7, quadrado8, quadrado9)) {
-		mudaCorQuadrado(quadrado7, quadrado8, quadrado9);
-		mudarVencedor(quadrado7);
-		return;
-	}
-
-	if (checaSequencia(quadrado1, quadrado4, quadrado7)) {
-		mudaCorQuadrado(quadrado1, quadrado4, quadrado7);
-		mudarVencedor(quadrado1);
-		return;
-	}
-
-	if (checaSequencia(quadrado2, quadrado5, quadrado8)) {
-		mudaCorQuadrado(quadrado2, quadrado5, quadrado8);
-		mudarVencedor(quadrado2);
-		return;
-	}
-
-	if (checaSequencia(quadrado3, quadrado6, quadrado9)) {
-		mudaCorQuadrado(quadrado3, quadrado6, quadrado9);
-		mudarVencedor(quadrado3);
-		return;
-	}
-
-	if (checaSequencia(quadrado1, quadrado5, quadrado9)) {
-		mudaCorQuadrado(quadrado1, quadrado5, quadrado9);
-		mudarVencedor(quadrado1);
-		return;
-	}
-
-	if (checaSequencia(quadrado3, quadrado5, quadrado7)) {
-		mudaCorQuadrado(quadrado3, quadrado5, quadrado7);
-		mudarVencedor(quadrado3);
-	}
-}
-
-function mudarVencedor(quadrado) {
-	vencedor = quadrado.innerHTML;
-	vencedorSelecionado.innerHTML = vencedor;
-}
-
-function mudaCorQuadrado(quadrado1, quadrado2, quadrado3) {
-	quadrado1.style.background = "#0f0";
-	quadrado2.style.background = "#0f0";
-	quadrado3.style.background = "#0f0";
-}
-
-function checaSequencia(quadrado1, quadrado2, quadrado3) {
-	var eigual = false;
-
-	if (
-		quadrado1.innerHTML !== "-" &&
-		quadrado1.innerHTML === quadrado2.innerHTML &&
-		quadrado2.innerHTML === quadrado3.innerHTML
-	) {
-		eigual = true;
-	}
-
-	return eigual;
-}
-
-function reiniciar() {
-	vencedor = null;
-	vencedorSelecionado.innerHTML = "";
-
-	for (var i = 1; i <= 9; i++) {
-		var quadrado = document.getElementById(i);
-		quadrado.style.background = "#eee";
-		quadrado.style.color = "#eee";
-		quadrado.innerHTML = "-";
-	}
-
-	mudarJogador("X");
-}
+Game();

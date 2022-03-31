@@ -1,17 +1,25 @@
+:root {
+	--cor-quadrado-default: rgb(169, 169, 169);
+}
+
 body {
+	background-color: rgb(60, 60, 60);
 	text-align: center;
 }
 
 .quadrado {
+	align-items: center;
+	justify-content: center;
 	text-align: center;
-	width: 50px;
-	background: #eee;
-	display: inline-block;
-	padding: 40px;
+	width: 120px;
+	height: 120px;
+	background: var(--cor-quadrado-default);
+	display: inline-flex;
 	font-size: 60px;
 	margin: 5px;
 	cursor: pointer;
-	color: #eee;
+	color: var(--cor-quadrado-default);
+	vertical-align: middle;
 }
 
 .jogador,
@@ -24,7 +32,7 @@ button {
 	margin-top: 10px;
 	width: 100px;
 	height: 30px;
-	background-color: #eee;
+	background-color: var(--cor-quadrado-default);
 	cursor: pointer;
 	border-radius: 15px;
 }
